@@ -1,6 +1,7 @@
-package main
+package geometry
 
 import (
+	"fabric_sim/helper"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -9,7 +10,6 @@ import (
 
 type Point struct {
 	X, Y         float64
-	mass         float64
 	PrevX, PrevY float64
 	pinned       bool
 	using        bool
@@ -18,7 +18,7 @@ type Point struct {
 func (p *Point) Update() {
 	mX, mY := ebiten.CursorPosition()
 
-	if Distance(float64(mX), float64(mY), p.X, p.Y) < 20 && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+	if helper.Distance(float64(mX), float64(mY), p.X, p.Y) < 5 && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		p.using = true
 	}
 
@@ -27,7 +27,7 @@ func (p *Point) Update() {
 		p.Y = float64(mY)
 	}
 
-	if Distance(float64(mX), float64(mY), p.X, p.Y) < 20 && inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
+	if helper.Distance(float64(mX), float64(mY), p.X, p.Y) < 5 && inpututil.IsMouseButtonJustReleased(ebiten.MouseButtonLeft) {
 		p.using = false
 	}
 
@@ -37,8 +37,8 @@ func (p *Point) Update() {
 
 	forceX := 0.
 	forceY := 0.05
-	accelerationX := forceX / p.mass
-	accelerationY := forceY / p.mass
+	accelerationX := forceX
+	accelerationY := forceY
 
 	prevPosX := p.X
 	prevPosY := p.Y
@@ -52,7 +52,13 @@ func (p *Point) Update() {
 }
 
 func (p *Point) Draw(screen *ebiten.Image) {
-	ebitenutil.DrawCircle(screen, p.X, p.Y, 3, colornames.Orange)
+	radius := 3.
+	clr := colornames.Orange
+	if p.pinned {
+		radius = 4.
+		clr = colornames.Green
+	}
+	ebitenutil.DrawCircle(screen, p.X, p.Y, radius, clr)
 }
 
 func (p *Point) Pin() {

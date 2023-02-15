@@ -1,6 +1,7 @@
-package main
+package geometry
 
 import (
+	"fabric_sim/helper"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"image/color"
@@ -12,13 +13,13 @@ type Stick struct {
 }
 
 func NewStick(p1 *Point, p2 *Point) *Stick {
-	return &Stick{start: p1, end: p2, length: Distance(p1.X, p1.Y, p2.X, p2.Y)}
+	return &Stick{start: p1, end: p2, length: helper.Distance(p1.X, p1.Y, p2.X, p2.Y)}
 }
 
 func (s *Stick) Update() {
 	diffX := s.start.X - s.end.X
 	diffY := s.start.Y - s.end.Y
-	diffFactor := (s.length - Length(diffX, diffY)) / Length(diffX, diffY) * 0.5
+	diffFactor := (s.length - helper.Length(diffX, diffY)) / helper.Length(diffX, diffY) * 0.5
 	offsetX := diffX * diffFactor
 	offsetY := diffY * diffFactor
 
@@ -29,7 +30,7 @@ func (s *Stick) Update() {
 }
 
 func (s *Stick) Draw(screen *ebiten.Image) {
-	curLength := Distance(s.start.X, s.start.Y, s.end.X, s.end.Y)
+	curLength := helper.Distance(s.start.X, s.start.Y, s.end.X, s.end.Y)
 	clr := color.RGBA{R: 255, G: uint8((curLength / s.length) * 165), A: 255}
 	ebitenutil.DrawLine(screen, s.start.X, s.start.Y, s.end.X, s.end.Y, clr)
 }
