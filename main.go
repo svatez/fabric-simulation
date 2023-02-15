@@ -32,17 +32,20 @@ type Game struct {
 func NewGame() *Game {
 	gm := &Game{}
 
-	space := 35
+	space := 25
 
-	gm.points = make([][]*Point, 10)
+	gm.points = make([][]*Point, 15)
 	for i := range gm.points {
-		gm.points[i] = make([]*Point, 10)
+		gm.points[i] = make([]*Point, 15)
 	}
+	lastI := len(gm.points) - 1
+	lastJ := len(gm.points[0]) - 1
 
-	for i := 0; i < 10; i++ {
-		for j := 0; j < 10; j++ {
+	for i := 0; i < lastI+1; i++ {
+		for j := 0; j < lastJ+1; j++ {
 			point := &Point{float64((i + 1) * space), float64(j * space), 10, float64((i + 1) * space), float64(j*space) - 0.05, false, false}
-			if j == 0 || j == 9 || i == 0 || i == 9 {
+
+			if j == 0 || j == lastJ || i == 0 || i == lastI {
 				point.Pin()
 			}
 			gm.points[i][j] = point
@@ -51,10 +54,10 @@ func NewGame() *Game {
 
 	for i := 0; i < len(gm.points)-1; i++ {
 		for j := 0; j < len(gm.points)-1; j++ {
-			stick1 := &Stick{gm.points[i][j], gm.points[i+1][j], float64(space)}
-			stick2 := &Stick{gm.points[i][j], gm.points[i][j+1], float64(space)}
-			//stick3 := &Stick{gm.points[i][j], gm.points[i+1][j+1], float64(space) * math.Sqrt(2)}
-			//stick4 := &Stick{gm.points[i][j+1], gm.points[i+1][j], float64(space) * math.Sqrt(2)}
+			stick1 := NewStick(gm.points[i][j], gm.points[i+1][j])
+			stick2 := NewStick(gm.points[i][j], gm.points[i][j+1])
+			//stick3 := NewStick(gm.points[i][j], gm.points[i+1][j+1])
+			//stick4 := NewStick(gm.points[i][j+1], gm.points[i+1][j])
 			//gm.sticks = append(gm.sticks, stick3, stick4)
 			gm.sticks = append(gm.sticks, stick1, stick2)
 
@@ -62,8 +65,8 @@ func NewGame() *Game {
 	}
 
 	for i := 0; i < len(gm.points)-1; i++ {
-		stick1 := &Stick{gm.points[9][i], gm.points[9][i+1], float64(space)}
-		stick2 := &Stick{gm.points[i][9], gm.points[i+1][9], float64(space)}
+		stick1 := NewStick(gm.points[lastI][i], gm.points[lastI][i+1])
+		stick2 := NewStick(gm.points[i][lastJ], gm.points[i+1][lastJ])
 		gm.sticks = append(gm.sticks, stick1, stick2)
 	}
 
